@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# Trophy quiz
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img width="160" alt="Screen Shot 2021-09-02 at 6 18 09 PM" src="https://user-images.githubusercontent.com/25860602/131817989-ec41e04c-86b9-447f-8e57-e25bb31ea2a5.png">
 
-## Available Scripts
+https://trophy-quiz.vercel.app 
+(mobile UI)
 
-In the project directory, you can run:
+Solve Quiz, and get Trophies!
 
-### `npm start`
+- ReactCancel changes
+- Recoil
+- Styled-component
+- react-testing-library
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Getting started
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. git clone `https://github.com/david718/trophy-quiz.git`
+2. cd trophy-quiz
+3. yarn install
+   - yarn start
+   - yarn test
 
-### `npm test`
+## Business logic
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- use Recoil to manage global state
 
-### `npm run build`
+### Recoil State tree
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- src/state
+  - QuizDifficulty : Select quiz difficulty to update queryDataState In LandingPage
+  - QuizNumbers : Input quiz numbers(amount) to update queryDataState In LandingPage
+  - QueryData : QueryData for axios request in initilaPropsState
+  - InitialProps : get queryData, and request quiz data from server API by axios(if queryData was updated, initialPropsState was updated, too)
+  - CurrentQuizIndex : index of current quiz in quiz datas(array)
+  - SelectedAnswer : answer of current quiz, selected by user
+  - QuizResults : after selecting answer, quiz result data(current quiz index, duration, corrent) was put in quizResults(quiz result array)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## View logic
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Component hierarchy : according to the Atomic design principle
+  - Atoms : only html tag (with styled component)
+  - Molucules : Reuseability was considered, two or more atoms
+  - Organisms : Less reuseability. managing Recoil state like container components.
+  - Pages : Page with Organisms
 
-### `npm run eject`
+### Orgnisms components in Atomic Design
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- TitleAnimation : In LandingPage, title and animation
+- QuizDifficulty : In LandingPage, select quiz difficulty
+- QuizNumbers : In LandingPage, input numbers of quiz
+- LandingFooter : has start button
+- Quiz : current quiz component, user can select an answer of 4 examples
+- QuizResult : render animation for result, after user select answer
+- QuizFooter : next or results button
+- TrophyNumbers : render numbers of trophy about numbers of correct quiz
+- Duration : all duration during solving quiz
+- ScoreChart : chart about numbers of correct and incorrect answers
+- ResultsFooter : start page button and retry button
+- OrganismShimmer : when async request is in loading, render shimmer page
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Test
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Integration test with react testing library
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Business Logic test list
 
-## Learn More
+Test for async InitialPropsState that requests quiz data from server
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- initialProps.test.tsx
+  - when amount set as 3 and difficulty set as easy, in initialProps check amount and difficulty of response quiz data
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### View Logic test list
 
-### Code Splitting
+integration test for each pages(Landing, Quiz, Results)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- LandingPage.test.tsx
+  - when quiz numbers value was changed, it was rendered properly
+  - when quiz difficulty value was changed, it was rendered properly
+- QuizPage.test.tsx
+  - 4 examples of quiz were rendered
+  - when page was rendered at first, button was disabled
+  - when user selects answer, button will be enabled
+- ResultPage.test.tsx
+  - duration of all quiz solving was rendered
+  - numbers of correct and incorrect answer was rendered
